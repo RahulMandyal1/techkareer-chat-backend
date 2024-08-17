@@ -34,7 +34,7 @@ export const addUser = async (req, res) => {
       .returning();
 
     const newUser = result[0];
-    console.log(result , 'result ')
+    console.log(result, "result ");
 
     const token = jwt.sign(
       { userId: newUser?.user_id, username: newUser?.username },
