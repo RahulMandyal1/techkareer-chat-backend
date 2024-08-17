@@ -4,12 +4,11 @@ import { users } from "./users";
 export const messages = pgTable("messages", {
   messageId: serial("message_id").primaryKey(),
   content: text("content").notNull(),
-  senderId: integer("sender_id")
+  from: integer("from_user_id")
     .references(() => users.userId)
     .notNull(),
-  receiverId: integer("receiver_id")
+  to: integer("to_user_id")
     .references(() => users.userId)
     .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
