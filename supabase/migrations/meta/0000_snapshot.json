@@ -1,5 +1,5 @@
 {
-  "id": "4f0c6a0b-3d67-4a52-a36d-ba74d22927ea",
+  "id": "d6fe583d-0889-4654-9fc3-5aef3189b27e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,14 +20,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "sender_id": {
-          "name": "sender_id",
+        "from_user_id": {
+          "name": "from_user_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
-        "receiver_id": {
-          "name": "receiver_id",
+        "to_user_id": {
+          "name": "to_user_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -38,23 +38,16 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "messages_sender_id_users_user_id_fk": {
-          "name": "messages_sender_id_users_user_id_fk",
+        "messages_from_user_id_users_user_id_fk": {
+          "name": "messages_from_user_id_users_user_id_fk",
           "tableFrom": "messages",
           "tableTo": "users",
           "columnsFrom": [
-            "sender_id"
+            "from_user_id"
           ],
           "columnsTo": [
             "user_id"
@@ -62,12 +55,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "messages_receiver_id_users_user_id_fk": {
-          "name": "messages_receiver_id_users_user_id_fk",
+        "messages_to_user_id_users_user_id_fk": {
+          "name": "messages_to_user_id_users_user_id_fk",
           "tableFrom": "messages",
           "tableTo": "users",
           "columnsFrom": [
-            "receiver_id"
+            "to_user_id"
           ],
           "columnsTo": [
             "user_id"

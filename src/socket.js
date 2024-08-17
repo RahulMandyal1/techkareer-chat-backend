@@ -1,38 +1,67 @@
+import { db } from "./db.js";
+import { messages } from "./models/messages.js";
+
+const activeUsers = [];
+
 export const setupSocket = (io) => {
+  io.use((socket, next) => {
+    const userId = socket.handshake?.auth?.userId;
+    if (!userId) {
+      return next(new Error("Invalid user"));
+    }
+    socket.userId = userId;
+    next();
+  });
+
   io.on("connection", (socket) => {
-    console.log("A user connected");
+    console.log("User connected:", socket.userId);
 
-    socket.on("joinChat", (chatId) => {
-      socket.join(chatId);
-      console.log(`User joined chat ${chatId}`);
-    });
+    // Add user to the active users array
+    activeUsers.push({ socketId: socket.id, userId: socket.userId });
 
-    socket.on("sendMessage", (message) => {
-      const { chatId, content, userId } = message;
+    console.log(activeUsers.values());
 
-      // Save message to the database
-      // Assume saveMessage is a function that saves the message to the DB
-      saveMessage(chatId, content, userId).then((savedMessage) => {
-        io.to(chatId).emit("receiveMessage", savedMessage);
-      });
+    // Emit the list of active users to the client
+    io.emit("active users", Array.from(activeUsers.values()));
+
+    socket.on("private message", async ({ content, toUserId }) => {
+      const message = {
+        content,
+        fromUserId: socket.userId,
+        toUserId: toUserId,
+      };
+
+      console.log(message);
+      try {
+        const [createdMessage] = await db
+          .insert(messages)
+          .values(message)
+          .returning();
+
+        // Emit only to the recipient
+        const recipient = activeUsers.find((user) => user.userId === toUserId);
+        if (recipient) {
+          io.to(recipient.socketId).emit("private message", {
+            ...createdMessage,
+          });
+        }
+      } catch (error) {
+        console.error("Error inserting message:", error);
+        // You might want to emit an error event to the client here
+      }
     });
 
     socket.on("disconnect", () => {
-      console.log("A user disconnected");
+      console.log("User disconnected:", socket.userId);
+      // Remove user from the active users array
+      const index = activeUsers.findIndex(
+        (user) => user.userId === socket.userId
+      );
+      if (index !== -1) {
+        activeUsers.splice(index, 1);
+      }
+      // Emit the updated list of active users to the client
+      io.emit("active users", activeUsers);
     });
   });
 };
-
-// Mock function to save message to the database
-async function saveMessage(chatId, content, userId) {
-  const result = await query(
-    `
-    INSERT INTO messages (chat_id, content, user_id, timestamp)
-    VALUES ($1, $2, $3, NOW())
-    RETURNING *
-  `,
-    [chatId, content, userId]
-  );
-
-  return result.rows[0];
-}
