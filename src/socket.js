@@ -19,8 +19,6 @@ export const setupSocket = (io) => {
     // Add user to the active users array
     activeUsers.push({ socketId: socket.id, userId: socket.userId });
 
-    console.log(activeUsers.values());
-
     // Emit the list of active users to the client
     io.emit("active users", Array.from(activeUsers.values()));
 
@@ -31,7 +29,6 @@ export const setupSocket = (io) => {
         toUserId: toUserId,
       };
 
-      console.log(message);
       try {
         const [createdMessage] = await db
           .insert(messages)

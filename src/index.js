@@ -3,12 +3,9 @@ import http from "http";
 import { Server as SocketIO } from "socket.io";
 import { config } from "./config.js";
 import { checkConnection } from "./db.js";
-import userRoutes from "./routes/v1/usersRoutes.js";
+import authRoutes from "./routes/v1/authRoutes.js";
 import cors from "cors";
 import { setupSocket } from "./socket.js";
-
-// import { router as messageRoutes } from "./routes/messages.js";
-// import { setupSocket } from "./socket.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -29,7 +26,7 @@ app.get("/", (req, res) => {
 });
 
 // API versioning
-app.use("/api/v1/auth", userRoutes);
+app.use("/api/v1/auth", authRoutes);
 setupSocket(io);
 
 const startServer = async () => {
