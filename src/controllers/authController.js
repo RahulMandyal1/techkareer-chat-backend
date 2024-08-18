@@ -11,8 +11,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export const addUser = async (req, res) => {
   const { username, password, profileUrl } = req.body;
 
-  console.log(req.body);
-
   // Check if all required fields are present
   if (!username || !password || !profileUrl) {
     return res.status(400).json({
@@ -34,10 +32,9 @@ export const addUser = async (req, res) => {
       .returning();
 
     const newUser = result[0];
-    console.log(result, "result ");
 
     const token = jwt.sign(
-      { userId: newUser?.user_id, username: newUser?.username },
+      { userId: newUser?.userId, username: newUser?.username },
       JWT_SECRET,
       { expiresIn: "15d" }
     );
@@ -91,7 +88,7 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user.user_id, username: user.username },
+      { userId: user.userId, username: user.username },
       JWT_SECRET,
       { expiresIn: "15d" }
     );
