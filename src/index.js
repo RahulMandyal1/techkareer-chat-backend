@@ -4,6 +4,8 @@ import { Server as SocketIO } from "socket.io";
 import { config } from "./config.js";
 import { checkConnection } from "./db.js";
 import authRoutes from "./routes/v1/authRoutes.js";
+import usersRoutes from "./routes/v1/usersRoutes.js";
+
 import cors from "cors";
 import { setupSocket } from "./socket.js";
 
@@ -27,6 +29,8 @@ app.get("/", (req, res) => {
 
 // API versioning
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", usersRoutes);
+
 setupSocket(io);
 
 const startServer = async () => {
